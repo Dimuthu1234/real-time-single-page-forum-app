@@ -43,7 +43,7 @@ class ReplyController extends Controller
     {
         return new ReplyResource($reply);
     }
-    
+
     /**
      * Update the specified resource in storage.
      *
