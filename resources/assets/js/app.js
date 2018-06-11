@@ -17,6 +17,9 @@ Vue.use(Vuetify)
 import VueSimplemde from 'vue-simplemde'
 Vue.use(VueSimplemde)
 
+import md from 'marked'
+window.md = md
+
 import User from './helpers/User'
 
 window.User = User

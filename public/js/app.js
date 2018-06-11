@@ -21667,6 +21667,11 @@ var User = function () {
                 return payload.sub;
             }
         }
+    }, {
+        key: 'own',
+        value: function own(id) {
+            return this.id() == id;
+        }
     }]);
 
     return User;
@@ -37879,8 +37884,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuetify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuetify__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_simplemde__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_simplemde___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vue_simplemde__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_User__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__router_router__ = __webpack_require__(88);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_marked__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_marked___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_marked__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_User__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__router_router__ = __webpack_require__(88);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -37901,8 +37908,11 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuet
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_2_vue_simplemde___default.a);
 
 
+window.md = __WEBPACK_IMPORTED_MODULE_3_marked___default.a;
 
-window.User = __WEBPACK_IMPORTED_MODULE_3__helpers_User__["a" /* default */];
+
+
+window.User = __WEBPACK_IMPORTED_MODULE_4__helpers_User__["a" /* default */];
 
 window.EventBus = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a();
 /**
@@ -37917,7 +37927,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('AppHome', __webpack_requi
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app',
-  router: __WEBPACK_IMPORTED_MODULE_4__router_router__["a" /* default */]
+  router: __WEBPACK_IMPORTED_MODULE_5__router_router__["a" /* default */]
 });
 
 /***/ }),
@@ -88080,7 +88090,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     components: { ShowQuestion: __WEBPACK_IMPORTED_MODULE_0__ShowQuestion___default.a },
     data: function data() {
         return {
-            question: {}
+            question: null
         };
     },
     created: function created() {
@@ -88178,7 +88188,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -88208,9 +88218,39 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['data']
+    props: ['data'],
+    data: function data() {
+        return {
+            own: User.own(this.data.user_id)
+        };
+    },
+
+    computed: {
+        body: function body() {
+            return md.parse(this.data.body);
+        }
+    },
+    methods: {
+        destroy: function destroy() {
+            var _this = this;
+
+            axios.delete('/api/question/' + this.data.slug).then(function (res) {
+                return _this.$router.push('/forum');
+            }).catch(function (error) {
+                return console.log(error.response.data);
+            });
+        }
+    }
 });
 
 /***/ }),
@@ -88256,7 +88296,40 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c("v-card-text", { domProps: { innerHTML: _vm._s(_vm.data.body) } })
+          _c("v-card-text", { domProps: { innerHTML: _vm._s(_vm.body) } }),
+          _vm._v(" "),
+          _vm.own
+            ? _c(
+                "v-card-actions",
+                [
+                  _c(
+                    "v-btn",
+                    { attrs: { icon: "", small: "" } },
+                    [
+                      _c("v-icon", { attrs: { color: "orange" } }, [
+                        _vm._v("edit")
+                      ])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { icon: "", small: "" },
+                      on: { click: _vm.destroy }
+                    },
+                    [
+                      _c("v-icon", { attrs: { color: "red" } }, [
+                        _vm._v("delete")
+                      ])
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            : _vm._e()
         ],
         1
       )
@@ -88282,7 +88355,9 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("show-question", { attrs: { data: _vm.question } })
+  return _vm.question
+    ? _c("show-question", { attrs: { data: _vm.question } })
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -88447,9 +88522,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this2 = this;
 
             axios.post('/api/question', this.form).then(function (res) {
-                return console.log(res.data);
+                return _this2.$router.push(res.data.path);
             }).catch(function (error) {
-                return _this2.errors = error.response.data.errors;
+                return _this2.errors = error.response.data.error;
             });
         }
     }
